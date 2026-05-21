@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador TI — Cinte Colombia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0B1D3A;--navy2:#122347;--navy3:#1A2F5A;
+  --gold:#C9A84C;--gold2:#E2C06A;--gold3:#F5DFA0;
+  --gold-bg:rgba(201,168,76,0.10);--gold-border:rgba(201,168,76,0.28);
+  --white:#FFFFFF;--off-white:#F7F5F0;--cream:#FAF8F3;--bg:#F0EDE6;
+  --text:#12202F;--text2:#3D5066;--text3:#8A9BB0;
+  --border:#E2DDD4;--border2:#CEC6B8;
+  --green:#1A6E46;--green-bg:rgba(26,110,70,0.08);
+  --amber:#7A5200;--amber-bg:#FEF9E6;
+  --red:#B52B22;--red-bg:rgba(181,43,34,0.08);
+  --shadow:0 1px 6px rgba(11,29,58,0.08);--shadow-lg:0 6px 28px rgba(11,29,58,0.14);
+  --font:'Plus Jakarta Sans',sans-serif;--display:'Playfair Display',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.55;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
+
+.header{background:var(--navy);height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(11,29,58,0.22);}
+.header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.35;}
+.logo-group{display:flex;align-items:center;gap:12px;}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:17px;color:var(--navy);font-weight:700;box-shadow:0 2px 8px rgba(201,168,76,.3);}
+.logo-title{font-family:var(--display);font-size:16px;color:var(--white);font-weight:600;}
+.logo-sub{font-size:11px;color:rgba(201,168,76,.65);margin-top:1px;letter-spacing:.3px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.hpill{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);color:var(--gold3);padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;}
+.ai-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(201,168,76,.6);}
+.ai-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.layout{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 62px);overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-top{padding:18px 18px 14px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sidebar-label::before{content:'';display:block;width:3px;height:12px;background:var(--gold);border-radius:2px;}
+.search-wrap{position:relative;margin-bottom:10px;}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
+.search-input{width:100%;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px 10px 34px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border .2s,box-shadow .2s;}
+.search-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12);}
+.search-input::placeholder{color:var(--text3);}
+.filters-row{display:flex;gap:7px;}
+.fsel{flex:1;background:var(--off-white);border:1.5px solid var(--border);border-radius:9px;padding:8px 9px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;cursor:pointer;}
+.fsel:focus{border-color:var(--gold);}
+.sidebar-count{padding:9px 18px;font-size:11px;color:var(--text3);font-weight:500;flex-shrink:0;}
+
+/* ROLE LIST */
+.role-list{flex:1;overflow-y:auto;}
+.role-item{padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.role-item:hover{background:var(--gold-bg);}
+.role-item.active{background:linear-gradient(90deg,var(--gold-bg),transparent);border-left:3px solid var(--gold);padding-left:15px;}
+.ri-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.ri-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3;flex:1;min-width:0;}
+.role-item.active .ri-name{color:var(--navy);}
+.ri-price{font-size:12px;font-weight:700;color:var(--green);white-space:nowrap;flex-shrink:0;}
+.ri-bottom{display:flex;align-items:flex-start;gap:5px;flex-wrap:wrap;row-gap:4px;}
+.nbadge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.nv-junior{background:#E6F5ED;color:#1A6E46;border:1px solid #B0DFC5;}
+.nv-mid{background:rgba(201,168,76,.12);color:#7A5200;border:1px solid rgba(201,168,76,.35);}
+.nv-senior{background:rgba(11,29,58,.07);color:var(--navy);border:1px solid rgba(11,29,58,.18);}
+.nv-lead{background:var(--navy);color:var(--gold2);border:1px solid var(--navy);}
+.ri-cat{font-size:11px;color:var(--text3);line-height:1.3;}
+.sap-badge{font-size:10px;font-weight:700;color:#0070D2;background:rgba(0,112,210,.08);border:1px solid rgba(0,112,210,.2);padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.alpina-badge{font-size:10px;font-weight:700;color:#1A6E46;background:#E6F5ED;border:1px solid #B0DFC5;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+
+.add-btn{padding:14px 18px;border-top:1px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;gap:11px;transition:background .12s;flex-shrink:0;}
+.add-btn:hover{background:var(--gold-bg);}
+.add-icon{width:34px;height:34px;flex-shrink:0;background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--gold2);line-height:1;}
+.add-texts{flex:1;min-width:0;}
+.add-label{font-size:13px;font-weight:600;color:var(--text);}
+.add-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.custom-pill{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;display:none;flex-shrink:0;}
+
+/* MAIN */
+.main{overflow-y:auto;background:var(--bg);}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:60px;text-align:center;}
+.empty-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:32px;color:var(--gold2);margin-bottom:22px;box-shadow:var(--shadow-lg);}
+.empty-title{font-family:var(--display);font-size:22px;color:var(--navy);margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--text3);max-width:280px;line-height:1.7;}
+
+/* DETAIL */
+.detail{padding:28px 32px;max-width:920px;}
+.breadcrumb{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;gap:7px;align-items:center;}
+.dtitle{font-family:var(--display);font-size:26px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.2;}
+.dsubtitle{font-size:14px;color:var(--text2);margin-bottom:12px;}
+.dpills{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:22px;row-gap:6px;}
+.dpill-tipo{padding:5px 14px;border:1.5px solid var(--border2);border-radius:20px;font-size:12px;color:var(--text2);font-weight:500;}
+.dpill-custom{background:var(--gold-bg);border:1.5px solid var(--gold-border);color:var(--gold);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;}
+.dpill-sap{background:rgba(0,112,210,.08);border:1.5px solid rgba(0,112,210,.25);color:#0070D2;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;}
+.dpill-alpina{background:#E6F5ED;border:1.5px solid #B0DFC5;color:#1A6E46;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;}
+
+/* METRIC CARDS */
+.metrics{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:14px;margin-bottom:20px;}
+.mcard{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);transition:box-shadow .2s,transform .18s;position:relative;overflow:hidden;}
+.mcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;}
+.mc-navy::before{background:linear-gradient(90deg,var(--navy),var(--navy3));}
+.mc-gold::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.mc-green::before{background:linear-gradient(90deg,var(--green),#2CA870);}
+.mc-slider::before{background:linear-gradient(90deg,var(--navy),var(--gold));}
+.mlabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);margin-bottom:8px;}
+.mvalue{font-size:19px;font-weight:700;margin-bottom:3px;font-variant-numeric:tabular-nums;}
+.mv-navy{color:var(--navy);}
+.mv-gold{color:var(--gold);}
+.mv-green{color:var(--green);}
+.msub{font-size:11px;color:var(--text3);}
+.msub strong{color:var(--text2);}
+
+/* SLIDER CARD */
+.slider-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.slider-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,var(--navy),var(--gold));}
+.slider-sal{font-size:19px;font-weight:700;color:var(--navy);margin-bottom:2px;font-variant-numeric:tabular-nums;}
+.slider-costo{font-size:13px;font-weight:700;color:var(--green);margin-bottom:10px;}
+.slider-hora{font-size:11px;color:var(--text3);}
+
+/* Custom range slider */
+.range-wrap{position:relative;padding:4px 0;}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--navy) var(--pct,50%),var(--border) var(--pct,50%));}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--white);border:3px solid var(--gold);box-shadow:0 2px 6px rgba(11,29,58,.2);cursor:pointer;transition:transform .1s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--white);border:3px solid var(--gold);box-shadow:0 2px 6px rgba(11,29,58,.2);cursor:pointer;}
+.slider-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--text3);font-weight:500;}
+.carga-tag{display:inline-block;margin-top:6px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--gold-bg);color:var(--amber);border:1px solid var(--gold-border);}
+
+/* HORA SECTION */
+.hora-section{background:var(--white);border:1px solid var(--gold-border);border-radius:14px;padding:0;box-shadow:var(--shadow);margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr 1fr;overflow:hidden;}
+.hora-cell{padding:16px 20px;}
+.hora-cell+.hora-cell{border-left:1px solid var(--border);}
+.hora-val{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:2px;}
+.hora-sub{font-size:11px;color:var(--text3);}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:22px;}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.tab:hover{color:var(--text2);}
+.tab.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:700;}
+
+/* SECTION */
+.section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow);}
+.stitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.stitle::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* BREAKDOWN */
+.brow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.brow:last-child{border-bottom:none;}
+.brow-l{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:13px;flex:1;}
+.bdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.brow-r{display:flex;align-items:baseline;gap:6px;}
+.bval{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+.bpct{font-size:11px;color:var(--text3);}
+.brow-total{margin:8px -22px -20px;padding:12px 22px;background:var(--gold-bg);border-radius:0 0 14px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:700;border-top:1px solid var(--gold-border);}
+.excluye-tag{font-size:10px;background:var(--amber-bg);color:var(--amber);border:1px solid #F0D887;border-radius:3px;padding:1px 5px;margin-left:4px;white-space:nowrap;}
+
+/* SIMULATOR */
+.sim-row{display:flex;gap:10px;margin-bottom:14px;}
+.sim-input{flex:1;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font);font-size:14px;font-weight:600;outline:none;transition:border .2s,box-shadow .2s;}
+.sim-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12);}
+.sim-btn{background:linear-gradient(135deg,var(--navy),var(--navy3));color:var(--gold2);border:none;border-radius:10px;padding:11px 22px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.sim-btn:hover{opacity:.88;}
+.alert{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;font-size:12px;font-weight:500;margin-bottom:12px;}
+.a-ok{background:var(--green-bg);border:1px solid #A8D9BE;color:var(--green);}
+.a-warn{background:var(--amber-bg);border:1px solid #F0D887;color:var(--amber);}
+.sim-result{background:var(--off-white);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.srrow{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;}
+.srrow:last-child{border-bottom:none;background:var(--gold-bg);font-weight:700;}
+.srrow-l{color:var(--text2);}
+.save-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--border2);border-radius:8px;padding:8px 14px;color:var(--text2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;margin-top:12px;transition:all .15s;}
+.save-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* AI */
+.ai-panel{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow);}
+.ai-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.ai-icon-box{width:34px;height:34px;background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--gold2);flex-shrink:0;}
+.ai-head-text h3{font-family:var(--display);font-size:15px;color:var(--navy);font-weight:600;}
+.ai-head-text p{font-size:11px;color:var(--text3);margin-top:1px;}
+.ai-ta{width:100%;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--font);font-size:13px;resize:none;min-height:72px;outline:none;transition:border .2s,box-shadow .2s;line-height:1.55;}
+.ai-ta:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12);}
+.ai-ta::placeholder{color:var(--text3);}
+.ai-send{margin-top:10px;background:linear-gradient(135deg,var(--navy),var(--navy3));color:var(--gold2);border:none;border-radius:10px;padding:10px 22px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;display:inline-flex;align-items:center;gap:7px;}
+.ai-send:hover{opacity:.88;}
+.ai-send:disabled{opacity:.5;cursor:not-allowed;}
+.ai-resp{margin-top:14px;background:var(--gold-bg);border:1px solid var(--gold-border);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:16px;font-size:13px;line-height:1.7;color:var(--text2);white-space:pre-wrap;}
+.ai-thinking{color:var(--text3);font-style:italic;animation:fade 1.2s infinite;}
+@keyframes fade{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ZOHO */
+.zoho-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.zfield{background:var(--off-white);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.zkey{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.zval{font-size:13px;font-weight:600;color:var(--text);}
+.copy-micro{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid var(--border2);border-radius:5px;padding:3px 8px;color:var(--text3);font-size:10px;cursor:pointer;margin-top:5px;transition:all .15s;font-family:var(--font);}
+.copy-micro:hover{border-color:var(--gold);color:var(--gold);}
+.json-block{background:var(--navy);border-radius:10px;padding:16px;font-size:11px;color:#9DB8D8;overflow:auto;white-space:pre;line-height:1.6;font-family:'Courier New',monospace;}
+.copy-main{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--navy),var(--navy3));color:var(--gold2);border:none;border-radius:8px;padding:9px 18px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;}
+.copy-main:hover{opacity:.88;}
+
+/* HISTORY */
+.hempty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
+.hitem{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--off-white);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;}
+.hname{font-size:13px;font-weight:600;color:var(--text);}
+.hmeta{font-size:11px;color:var(--text3);margin-top:2px;}
+.hsal{font-size:14px;font-weight:700;color:var(--green);}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(11,29,58,.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal{background:var(--white);border-radius:18px;width:100%;max-width:540px;box-shadow:0 24px 60px rgba(11,29,58,.25);overflow:hidden;}
+.mhead{background:linear-gradient(135deg,var(--navy),var(--navy3));padding:22px 26px;position:relative;}
+.mhead::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4;}
+.mhead h2{font-family:var(--display);font-size:18px;color:var(--white);font-weight:700;}
+.mhead p{font-size:12px;color:rgba(201,168,76,.65);margin-top:3px;}
+.mbody{padding:22px 26px;}
+.mlabel{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.minput{width:100%;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;margin-bottom:16px;transition:border .2s;}
+.minput:focus{border-color:var(--gold);}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.msel{width:100%;background:var(--off-white);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;cursor:pointer;margin-bottom:16px;}
+.ai-sug-box{background:var(--gold-bg);border:1px solid var(--gold-border);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:14px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:16px;display:none;}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;padding:16px 26px;background:var(--off-white);border-top:1px solid var(--border);}
+.btn-ghost{background:none;border:1.5px solid var(--border2);color:var(--text2);border-radius:10px;padding:10px 20px;font-family:var(--font);font-size:13px;cursor:pointer;}
+.btn-ai-m{background:var(--gold-bg);border:1.5px solid var(--gold-border);color:var(--gold);border-radius:10px;padding:10px 18px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-ai-m:hover{background:rgba(201,168,76,.18);}
+.btn-ai-m:disabled{opacity:.5;cursor:not-allowed;}
+.btn-save-m{background:linear-gradient(135deg,var(--navy),var(--navy3));color:var(--gold2);border:none;border-radius:10px;padding:10px 24px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;}
+
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.sidebar{height:45vh;}.metrics{grid-template-columns:1fr 1fr;}.hora-section{grid-template-columns:1fr;}.mgrid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo-group">
+    <div class="logo-mark">C</div>
+    <div>
+      <div class="logo-title">Cinte Colombia</div>
+      <div class="logo-sub">Cotizador de Roles TI · 2026</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="ai-badge"><div class="ai-dot"></div> IA activa</div>
+    <div class="hpill" id="totalPill">— roles</div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-label">Catálogo de roles</div>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Buscar cargo, tecnología, nivel…" oninput="filterRoles()">
+      </div>
+      <div class="filters-row">
+        <select class="fsel" id="catFilter" onchange="filterRoles()"><option value="">Todas las categorías</option></select>
+        <select class="fsel" id="nivFilter" onchange="filterRoles()">
+          <option value="">Todos los niveles</option>
+          <option>Junior/Mid</option><option>Mid (Semi-Senior)</option><option>Senior</option><option>Senior / Lead</option>
+        </select>
+      </div>
+    </div>
+    <div class="sidebar-count" id="sidebarCount"></div>
+    <div class="role-list" id="roleList"></div>
+    <div class="add-btn" onclick="openModal()">
+      <div class="add-icon">+</div>
+      <div class="add-texts">
+        <div class="add-label">Agregar cargo no mapeado</div>
+        <div class="add-sub">La IA sugerirá categoría y banda</div>
+      </div>
+      <div class="custom-pill" id="customPill"></div>
+    </div>
+  </aside>
+
+  <main class="main" id="mainPanel">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">✦</div>
+      <div class="empty-title">Selecciona un rol</div>
+      <div class="empty-sub">Elige un cargo del catálogo para ver el desglose con carga social real, valor hora y simulador interactivo.</div>
+    </div>
+    <div class="detail" id="detailPanel" style="display:none"></div>
+  </main>
+</div>
+
+<div class="overlay" id="modalOverlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhead">
+      <h2>Agregar cargo no mapeado</h2>
+      <p>La IA clasificará el cargo y sugerirá banda salarial según la taxonomía Cinte</p>
+    </div>
+    <div class="mbody">
+      <div id="aiSugBox" class="ai-sug-box"></div>
+      <div class="mlabel">Nombre del cargo *</div>
+      <input type="text" class="minput" id="mNombre" placeholder="Ej: Arquitecto de Microservicios">
+      <div class="mlabel">Descripción / tecnologías</div>
+      <textarea class="minput" id="mDesc" placeholder="Ej: Diseña microservicios en Go, gestiona Kubernetes…" style="resize:vertical;min-height:56px"></textarea>
+      <div class="mgrid">
+        <div><div class="mlabel">Categoría</div><select class="msel" id="mCat"><option value="">— IA sugerirá —</option></select></div>
+        <div><div class="mlabel">Nivel</div>
+          <select class="msel" id="mNivel"><option value="">— IA sugerirá —</option>
+            <option>Junior/Mid</option><option>Mid (Semi-Senior)</option><option>Senior</option><option>Senior / Lead</option>
+          </select>
+        </div>
+      </div>
+      <div class="mgrid">
+        <div><div class="mlabel">Banda inferior (COP)</div><input type="number" class="minput" id="mBandaInf" placeholder="8000000"></div>
+        <div><div class="mlabel">Banda superior (COP)</div><input type="number" class="minput" id="mBandaSup" placeholder="12000000"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn-ai-m" id="btnAI" onclick="aiSuggest()">✦ Sugerir con IA</button>
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save-m" onclick="saveCustom()">Guardar cargo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ROLES_BASE = [{"rol":"Desarrollador","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Generalista","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4057273.0,"carga_prestacional":1439210.0,"costo_total":5496483.0},{"rol":"Desarrollador Semisenior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Generalista","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Generalista","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Developer Fullstack-Back","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Backend","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Lider Desarrollador","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Generalista","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Desarrollador Backend","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador de Software Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Desarrollador Frontend","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Frontend","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Desarrollador Frontend Semisenior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Frontend","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador Mobile Semisenior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Mobile","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador .Net","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · .NET","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador Cobol Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · COBOL","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Desarrollador Datapower","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · IBM DataPower","nivel":"Mid (Semi-Senior)","banda_inf":8000000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Desarrollador Jplsql/java","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Java/PL-SQL","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador NodeJS Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Node.js","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Desarrollador Python","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador python .net","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python / .NET","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Desarrollador Senior PHP/.NET/SQL/C#/Phyton","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Multi-stack","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Desarrollador.Net Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · .NET","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Developer ETL","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · ETL","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Developer Genexus","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Genexus","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Developer Teradata","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Teradata","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Especialista PL/SQL","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · PL/SQL","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Ingeniero Desarrollador IA","categoria":"Desarrollo de software","nombre_mercado":"AI / ML Engineer","subfamilia":"Stack específico · IA/ML","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Líder Técnico PL SQ","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · PL/SQL","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Líder Técnico Desarrollo de Software (ETL)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · ETL","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Desarrollador Cloud Junior","categoria":"Desarrollo de software","nombre_mercado":"Cloud Developer","subfamilia":"Cloud development","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"Administrador Linux","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Consultor Solaris","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix / Solaris","nivel":"Senior","banda_inf":9000000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Administrador WINDOWS","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Windows / Virtualización","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Administrador Middleware","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Administrador Bizagi","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware / BPM","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Cloud Administration Analyst","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Consultor AWS","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud · AWS","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Infraestructure Administrator Cloud Jr","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"Infrastructure Administrator Cloud - Database","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud · Database","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Operador Datacenter","categoria":"Infraestructura y plataformas","nombre_mercado":"Datacenter Operator","subfamilia":"Datacenter / NOC","nivel":"Junior/Mid","banda_inf":3500000,"banda_sup":4500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Ingeniero soporte NOC","categoria":"Infraestructura y plataformas","nombre_mercado":"NOC Engineer","subfamilia":"Datacenter / NOC","nivel":"Mid (Semi-Senior)","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"Tecnico de Monitoreo","categoria":"Infraestructura y plataformas","nombre_mercado":"Monitoring Technician","subfamilia":"Datacenter / NOC","nivel":"Junior/Mid","banda_inf":3500000,"banda_sup":4500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Ingeniero Citrix Nivel 1","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Citrix / VDI","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"Analista de Infraestructura","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure Analyst","subfamilia":"Análisis de infraestructura","nivel":"Mid (Semi-Senior)","banda_inf":6500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Ingeniero de Datos","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Engineer","subfamilia":"Ingeniería de datos","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Analista de Datos y Automatizacion","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Analyst","subfamilia":"Ingeniería de datos","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Científico de Datos Semisenior","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Scientist","subfamilia":"Ciencia de datos","nivel":"Mid (Semi-Senior)","banda_inf":6500000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Científico de Datos Senior","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Scientist","subfamilia":"Ciencia de datos","nivel":"Senior","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Especialista de Analítica","categoria":"Datos, Analytics e IA","nombre_mercado":"Analytics Specialist","subfamilia":"Analytics / BI","nivel":"Senior","banda_inf":8500000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Analista Gobierno de Datos","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Governance Analyst","subfamilia":"Analytics / BI","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Administrador de Base de Datos Relacionales","categoria":"Datos, Analytics e IA","nombre_mercado":"Database Administrator","subfamilia":"Bases de datos","nivel":"Senior","banda_inf":8500000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Administrador de Base de Datos","categoria":"Datos, Analytics e IA","nombre_mercado":"Database Administrator","subfamilia":"Bases de datos","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Consultor DB2","categoria":"Datos, Analytics e IA","nombre_mercado":"Database Administrator","subfamilia":"Bases de datos · IBM DB2","nivel":"Senior","banda_inf":13500000,"banda_sup":15500000,"tipo_salario":"Ordinario","salario_asignado":13500000,"total_devengo":13500000.0,"carga_prestacional":4781268.0,"costo_total":18281268.0},{"rol":"Analista QA","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Engineer","subfamilia":"QA generalista","nivel":"Mid (Semi-Senior)","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"Analista QA Automatizador","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Automation Engineer","subfamilia":"QA automatización","nivel":"Mid (Semi-Senior)","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"Analista QA Junior","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Engineer","subfamilia":"QA generalista","nivel":"Junior/Mid","banda_inf":3500000,"banda_sup":4500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Analista QA Senior","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Engineer","subfamilia":"QA generalista","nivel":"Senior","banda_inf":6500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Lider de Pruebas","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Lead","subfamilia":"QA generalista","nivel":"Senior / Lead","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Administrador de Vulnerabilidades","categoria":"Ciberseguridad","nombre_mercado":"Security Engineer","subfamilia":"Gestión de vulnerabilidades","nivel":"Mid (Semi-Senior)","banda_inf":6500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Analista seguridad Senior","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis de seguridad","nivel":"Senior","banda_inf":9000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Gestor técnico de Seguridad de la información","categoria":"Ciberseguridad","nombre_mercado":"Information Security Manager","subfamilia":"Gestión de seguridad","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Líder de Vulnerabilidades - WINDOWS","categoria":"Ciberseguridad","nombre_mercado":"Security Engineer","subfamilia":"Gestión de vulnerabilidades","nivel":"Senior","banda_inf":8500000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Security Analyst and Access Control","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis y control de acceso","nivel":"Mid (Semi-Senior)","banda_inf":6000000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6000000,"total_devengo":6000000.0,"carga_prestacional":2125008.0,"costo_total":8125008.0},{"rol":"Gerente de proyectos Senior","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Project Manager","subfamilia":"Project Management","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Gerente de Proyectos","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Project Manager","subfamilia":"Project Management","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Gestor de la Demanda","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Demand Manager","subfamilia":"Project Management","nivel":"Mid (Semi-Senior)","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"PMO Junior","categoria":"Gestión de proyectos y Agile","nombre_mercado":"PMO Analyst","subfamilia":"Project Management","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"Scrum Master","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Scrum Master","subfamilia":"Agile / Product","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"Product Owner","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Product Owner","subfamilia":"Agile / Product","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Product Owner Semisenior","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Product Owner","subfamilia":"Agile / Product","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Analista de Requerimiento","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Business Analyst","subfamilia":"Requerimientos","nivel":"Mid (Semi-Senior)","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"Business Analyst SR","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Business Analyst","subfamilia":"Requerimientos","nivel":"Senior","banda_inf":6500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Arquitecto Empresarial","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Enterprise Architect","subfamilia":"Arquitectura","nivel":"Senior","banda_inf":14300000,"banda_sup":17000000,"tipo_salario":"Ordinario","salario_asignado":14300000,"total_devengo":14300000.0,"carga_prestacional":5064602.0,"costo_total":19364602.0},{"rol":"Arquitecto de Soluciones","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Solution Architect","subfamilia":"Arquitectura","nivel":"Mid (Semi-Senior)","banda_inf":12000000,"banda_sup":14000000,"tipo_salario":"Ordinario","salario_asignado":12000000,"total_devengo":12000000.0,"carga_prestacional":4250016.0,"costo_total":16250016.0},{"rol":"Arquitecto de Desarrrollo Semisenior","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Software Architect","subfamilia":"Arquitectura","nivel":"Mid (Semi-Senior)","banda_inf":12000000,"banda_sup":14000000,"tipo_salario":"Ordinario","salario_asignado":12000000,"total_devengo":12000000.0,"carga_prestacional":4250016.0,"costo_total":16250016.0},{"rol":"Arquitecto de Soluciones","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Solution Architect","subfamilia":"Arquitectura","nivel":"Senior","banda_inf":15000000,"banda_sup":17000000,"tipo_salario":"Ordinario","salario_asignado":15000000,"total_devengo":15000000.0,"carga_prestacional":5312520.0,"costo_total":20312520.0},{"rol":"Lider técnico","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Technical Lead","subfamilia":"Liderazgo técnico","nivel":"Senior","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Líder Técnico Semisenior","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Technical Lead","subfamilia":"Liderazgo técnico","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Lider Implementacion","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Implementation Lead","subfamilia":"Liderazgo técnico","nivel":"Senior / Lead","banda_inf":15000000,"banda_sup":17400000,"tipo_salario":"Ordinario","salario_asignado":15000000,"total_devengo":15000000.0,"carga_prestacional":5312520.0,"costo_total":20312520.0},{"rol":"Ingeniero Soporte N2","categoria":"Soporte y servicio IT","nombre_mercado":"IT Support Engineer","subfamilia":"Soporte N2","nivel":"Mid (Semi-Senior)","banda_inf":4000000,"banda_sup":5000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"Técnico Soporte N1","categoria":"Soporte y servicio IT","nombre_mercado":"IT Support Engineer","subfamilia":"Soporte N1","nivel":"Junior/Mid","banda_inf":3200000,"banda_sup":4000000,"tipo_salario":"Ordinario","salario_asignado":3200000,"total_devengo":3488095.0,"carga_prestacional":1177328.0,"costo_total":4665423.0},{"rol":"Analista Senior de Operaciones y Servicio","categoria":"Soporte y servicio IT","nombre_mercado":"IT Operations Analyst","subfamilia":"Gestión de servicio","nivel":"Senior","banda_inf":6500000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Analista de operaciones","categoria":"Soporte y servicio IT","nombre_mercado":"IT Operations Analyst","subfamilia":"Gestión de servicio","nivel":"Mid (Semi-Senior)","banda_inf":4500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"Service Manager","categoria":"Soporte y servicio IT","nombre_mercado":"Service Manager","subfamilia":"Gestión de servicio","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"Ingeniero de Procesos Mid","categoria":"Procesos, BPM y gestión documental","nombre_mercado":"Process Engineer","subfamilia":"Análisis de procesos","nivel":"Mid (Semi-Senior)","banda_inf":5500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"Gestor Documental","categoria":"Procesos, BPM y gestión documental","nombre_mercado":"Document Management Analyst","subfamilia":"Gestión documental","nivel":"Mid (Semi-Senior)","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"Ingeniero de Procesos Jr","categoria":"Procesos, BPM y gestión documental","nombre_mercado":"Process Engineer","subfamilia":"Análisis de procesos","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"Ingeniero de Procesos Sr","categoria":"Procesos, BPM y gestión documental","nombre_mercado":"Process Engineer","subfamilia":"Análisis de procesos","nivel":"Senior","banda_inf":6500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"Devops Semisenior","categoria":"DevOps y CI/CD","nombre_mercado":"DevOps Engineer","subfamilia":"DevOps","nivel":"Mid (Semi-Senior)","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"Devops Senior","categoria":"DevOps y CI/CD","nombre_mercado":"DevOps Engineer","subfamilia":"DevOps","nivel":"Senior","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"Analista de Tecnología I","categoria":"Consultoría TI generalista","nombre_mercado":"Technology Analyst","subfamilia":"Consultoría","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"Analista de Tecnología Intermedio II","categoria":"Consultoría TI generalista","nombre_mercado":"Technology Analyst","subfamilia":"Consultoría","nivel":"Mid (Semi-Senior)","banda_inf":5500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"Analista Administrativo Senior","categoria":"Roles de soporte no TI","nombre_mercado":"Administrative Analyst","subfamilia":"Administrativo","nivel":"Senior","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"Analista Financiero","categoria":"Roles de soporte no TI","nombre_mercado":"Financial Analyst","subfamilia":"Finanzas","nivel":"Mid (Semi-Senior)","banda_inf":3500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Analista Financiero proyectos TI","categoria":"Roles de soporte no TI","nombre_mercado":"Financial Analyst","subfamilia":"Finanzas","nivel":"Mid (Semi-Senior)","banda_inf":3500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Analista RRHH","categoria":"Roles de soporte no TI","nombre_mercado":"HR Analyst","subfamilia":"RRHH","nivel":"Mid (Semi-Senior)","banda_inf":3500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Analista Operativa","categoria":"Roles de soporte no TI","nombre_mercado":"Operations Analyst","subfamilia":"Operaciones","nivel":"Mid (Semi-Senior)","banda_inf":3500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Analista de conciliaciones","categoria":"Roles de soporte no TI","nombre_mercado":"Reconciliation Analyst","subfamilia":"Finanzas","nivel":"Mid (Semi-Senior)","banda_inf":3500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"Auxiliar Administrativo","categoria":"Roles de soporte no TI","nombre_mercado":"Administrative Assistant","subfamilia":"Administrativo","nivel":"Junior/Mid","banda_inf":3000000,"banda_sup":4000000,"tipo_salario":"Ordinario","salario_asignado":3000000,"total_devengo":3288095.0,"carga_prestacional":1106494.0,"costo_total":4394589.0},{"rol":"Gestora del Cambio","categoria":"Roles de soporte no TI","nombre_mercado":"Change Management Analyst","subfamilia":"Gestión del cambio","nivel":"Mid (Semi-Senior)","banda_inf":3800000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3800000,"total_devengo":4088095.0,"carga_prestacional":1389829.0,"costo_total":5477924.0},{"rol":"Profesional de estrategia","categoria":"Roles de soporte no TI","nombre_mercado":"Strategy Analyst","subfamilia":"Estrategia","nivel":"Mid (Semi-Senior)","banda_inf":3500000,"banda_sup":5500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"[Estimado] Full Stack / Backend – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Backend","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Full Stack / Backend – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Backend","nivel":"Senior","banda_inf":8500000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Full Stack / Backend – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Full Stack / Backend","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Backend – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Backend – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Backend / Integraciones – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend / Integraciones","nivel":"Junior/Mid","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"[Estimado] Backend / Integraciones – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend / Integraciones","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Backend / Integraciones – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend / Integraciones","nivel":"Senior","banda_inf":8500000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Backend / Integraciones – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Backend / Integraciones","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Frontend – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Frontend","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Frontend – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Frontend","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Mobile – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Mobile","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Mobile – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Mobile","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Mobile – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Mobile","nivel":"Senior / Lead","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Stack específico · .NET – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · .NET","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Stack específico · .NET – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · .NET","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Stack específico · COBOL – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · COBOL","nivel":"Junior/Mid","banda_inf":6000000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6000000,"total_devengo":6000000.0,"carga_prestacional":2125008.0,"costo_total":8125008.0},{"rol":"[Estimado] Stack específico · COBOL – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · COBOL","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"[Estimado] Stack específico · COBOL – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · COBOL","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Stack específico · IBM DataPower – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · IBM DataPower","nivel":"Senior","banda_inf":10500000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Stack específico · IBM DataPower – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · IBM DataPower","nivel":"Senior / Lead","banda_inf":12000000,"banda_sup":14000000,"tipo_salario":"Ordinario","salario_asignado":12000000,"total_devengo":12000000.0,"carga_prestacional":4250016.0,"costo_total":16250016.0},{"rol":"[Estimado] Stack específico · Java/PL-SQL – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Java/PL-SQL","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"[Estimado] Stack específico · Java/PL-SQL – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Java/PL-SQL","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"[Estimado] Stack específico · Java/PL-SQL – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Java/PL-SQL","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Stack específico · Node.js – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Node.js","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Stack específico · Node.js – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Node.js","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Stack específico · Node.js – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Node.js","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Stack específico · Python – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"[Estimado] Stack específico · Python – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Stack específico · Python – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python","nivel":"Senior / Lead","banda_inf":10500000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Stack específico · Python / .NET – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python / .NET","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"[Estimado] Stack específico · Python / .NET – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python / .NET","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Stack específico · Python / .NET – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Python / .NET","nivel":"Senior / Lead","banda_inf":10500000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Stack específico · Multi-stack – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Multi-stack","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Stack específico · Multi-stack – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Multi-stack","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Stack específico · Multi-stack – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Multi-stack","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Stack específico · ETL – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · ETL","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"[Estimado] Stack específico · ETL – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · ETL","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"[Estimado] Stack específico · Genexus – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Genexus","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Stack específico · Genexus – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Genexus","nivel":"Senior","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Stack específico · Genexus – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Genexus","nivel":"Senior / Lead","banda_inf":11000000,"banda_sup":12500000,"tipo_salario":"Ordinario","salario_asignado":11000000,"total_devengo":11000000.0,"carga_prestacional":3895848.0,"costo_total":14895848.0},{"rol":"[Estimado] Stack específico · Teradata – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Teradata","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Stack específico · Teradata – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Teradata","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Stack específico · Teradata – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Teradata","nivel":"Senior / Lead","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Stack específico · Scala – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Scala","nivel":"Junior/Mid","banda_inf":7500000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"[Estimado] Stack específico · Scala – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Scala","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Stack específico · Scala – Senior","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Scala","nivel":"Senior","banda_inf":9500000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Stack específico · Scala – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · Scala","nivel":"Senior / Lead","banda_inf":11500000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11500000,"total_devengo":11500000.0,"carga_prestacional":4072932.0,"costo_total":15572932.0},{"rol":"[Estimado] Stack específico · PL/SQL – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · PL/SQL","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Stack específico · PL/SQL – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Software Developer / Engineer","subfamilia":"Stack específico · PL/SQL","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Stack específico · IA/ML – Junior/Mid","categoria":"Desarrollo de software","nombre_mercado":"AI / ML Engineer","subfamilia":"Stack específico · IA/ML","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Stack específico · IA/ML – Senior","categoria":"Desarrollo de software","nombre_mercado":"AI / ML Engineer","subfamilia":"Stack específico · IA/ML","nivel":"Senior","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Stack específico · IA/ML – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"AI / ML Engineer","subfamilia":"Stack específico · IA/ML","nivel":"Senior / Lead","banda_inf":12500000,"banda_sup":14000000,"tipo_salario":"Ordinario","salario_asignado":12500000,"total_devengo":12500000.0,"carga_prestacional":4427100.0,"costo_total":16927100.0},{"rol":"[Estimado] Cloud development – Mid (Semi-Senior)","categoria":"Desarrollo de software","nombre_mercado":"Cloud Developer","subfamilia":"Cloud development","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Cloud development – Senior","categoria":"Desarrollo de software","nombre_mercado":"Cloud Developer","subfamilia":"Cloud development","nivel":"Senior","banda_inf":9000000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Cloud development – Senior / Lead","categoria":"Desarrollo de software","nombre_mercado":"Cloud Developer","subfamilia":"Cloud development","nivel":"Senior / Lead","banda_inf":10500000,"banda_sup":12500000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Linux / Unix – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Linux / Unix – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix","nivel":"Senior","banda_inf":9000000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Linux / Unix – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix","nivel":"Senior / Lead","banda_inf":10500000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Linux / Unix / Solaris – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix / Solaris","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Linux / Unix / Solaris – Mid (Semi-Senior)","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix / Solaris","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"[Estimado] Linux / Unix / Solaris – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Linux / Unix / Solaris","nivel":"Senior / Lead","banda_inf":10500000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Windows / Virtualización – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Windows / Virtualización","nivel":"Junior/Mid","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"[Estimado] Windows / Virtualización – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Windows / Virtualización","nivel":"Senior","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Windows / Virtualización – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Windows / Virtualización","nivel":"Senior / Lead","banda_inf":10000000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Middleware – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware","nivel":"Junior/Mid","banda_inf":6500000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"[Estimado] Middleware – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware","nivel":"Senior","banda_inf":10000000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Middleware – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware","nivel":"Senior / Lead","banda_inf":11500000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11500000,"total_devengo":11500000.0,"carga_prestacional":4072932.0,"costo_total":15572932.0},{"rol":"[Estimado] Middleware / BPM – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware / BPM","nivel":"Junior/Mid","banda_inf":6500000,"banda_sup":8000000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"[Estimado] Middleware / BPM – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware / BPM","nivel":"Senior","banda_inf":10000000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Middleware / BPM – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Middleware / BPM","nivel":"Senior / Lead","banda_inf":11500000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11500000,"total_devengo":11500000.0,"carga_prestacional":4072932.0,"costo_total":15572932.0},{"rol":"[Estimado] Cloud – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud","nivel":"Senior","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Cloud · AWS – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud · AWS","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Cloud · AWS – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud · AWS","nivel":"Senior","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Cloud · Database – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud · Database","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Cloud · Database – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Cloud Engineer / Administrator","subfamilia":"Cloud · Database","nivel":"Senior","banda_inf":10000000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Datacenter / NOC – Mid (Semi-Senior)","categoria":"Infraestructura y plataformas","nombre_mercado":"Datacenter Operator","subfamilia":"Datacenter / NOC","nivel":"Mid (Semi-Senior)","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"[Estimado] Datacenter / NOC – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Datacenter Operator","subfamilia":"Datacenter / NOC","nivel":"Senior","banda_inf":6500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"[Estimado] Datacenter / NOC – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Datacenter Operator","subfamilia":"Datacenter / NOC","nivel":"Senior / Lead","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"[Estimado] Citrix / VDI – Mid (Semi-Senior)","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Citrix / VDI","nivel":"Mid (Semi-Senior)","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Citrix / VDI – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Citrix / VDI","nivel":"Senior","banda_inf":9000000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Citrix / VDI – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure / Platform Engineer","subfamilia":"Citrix / VDI","nivel":"Senior / Lead","banda_inf":10500000,"banda_sup":12000000,"tipo_salario":"Ordinario","salario_asignado":10500000,"total_devengo":10500000.0,"carga_prestacional":3718764.0,"costo_total":14218764.0},{"rol":"[Estimado] Analista de infraestructura – Junior/Mid","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure Analyst","subfamilia":"Análisis de infraestructura","nivel":"Junior/Mid","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"[Estimado] Analista de infraestructura – Senior","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure Analyst","subfamilia":"Análisis de infraestructura","nivel":"Senior","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"[Estimado] Analista de infraestructura – Senior / Lead","categoria":"Infraestructura y plataformas","nombre_mercado":"Infrastructure Analyst","subfamilia":"Análisis de infraestructura","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Ingeniería de datos – Junior/Mid","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Engineer","subfamilia":"Ingeniería de datos","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Ingeniería de datos – Senior","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Engineer","subfamilia":"Ingeniería de datos","nivel":"Senior","banda_inf":9500000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Ingeniería de datos – Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Engineer","subfamilia":"Ingeniería de datos","nivel":"Senior / Lead","banda_inf":11000000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11000000,"total_devengo":11000000.0,"carga_prestacional":3895848.0,"costo_total":14895848.0},{"rol":"[Estimado] Ciencia de datos – Junior/Mid","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Scientist","subfamilia":"Ciencia de datos","nivel":"Junior/Mid","banda_inf":6000000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":6000000,"total_devengo":6000000.0,"carga_prestacional":2125008.0,"costo_total":8125008.0},{"rol":"[Estimado] Ciencia de datos – Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Scientist","subfamilia":"Ciencia de datos","nivel":"Senior / Lead","banda_inf":11000000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11000000,"total_devengo":11000000.0,"carga_prestacional":3895848.0,"costo_total":14895848.0},{"rol":"Analista Gobierno de Datos Junior","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Governance Analyst","subfamilia":"Analytics / BI","nivel":"Junior/Mid","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"[Estimado] Analytics / BI – Mid (Semi-Senior)","categoria":"Datos, Analytics e IA","nombre_mercado":"Analytics Specialist","subfamilia":"Analytics / BI","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"[Estimado] Analytics / BI – Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Analytics Specialist","subfamilia":"Analytics / BI","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Analytics / BI – Junior/Mid","categoria":"Datos, Analytics e IA","nombre_mercado":"Analytics Specialist","subfamilia":"Analytics / BI","nivel":"Junior/Mid","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"[Estimado] Bases de datos – Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Database Administrator","subfamilia":"Bases de datos","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Bases de datos · IBM DB2 – Mid (Semi-Senior)","categoria":"Datos, Analytics e IA","nombre_mercado":"Database Administrator","subfamilia":"Bases de datos · IBM DB2","nivel":"Mid (Semi-Senior)","banda_inf":11500000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11500000,"total_devengo":11500000.0,"carga_prestacional":4072932.0,"costo_total":15572932.0},{"rol":"[Estimado] Bases de datos · IBM DB2 – Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Database Administrator","subfamilia":"Bases de datos · IBM DB2","nivel":"Senior / Lead","banda_inf":15500000,"banda_sup":17500000,"tipo_salario":"Ordinario","salario_asignado":17500000,"total_devengo":17500000.0,"carga_prestacional":6197940.0,"costo_total":23697940.0},{"rol":"[Estimado] QA automatización – Junior/Mid","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Automation Engineer","subfamilia":"QA automatización","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":5000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] QA automatización – Senior","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Automation Engineer","subfamilia":"QA automatización","nivel":"Senior","banda_inf":6500000,"banda_sup":8500000,"tipo_salario":"Ordinario","salario_asignado":6500000,"total_devengo":6500000.0,"carga_prestacional":2302092.0,"costo_total":8802092.0},{"rol":"[Estimado] QA automatización – Senior / Lead","categoria":"QA, Testing y Calidad","nombre_mercado":"QA Automation Engineer","subfamilia":"QA automatización","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Gestión de vulnerabilidades – Senior / lead","categoria":"Ciberseguridad","nombre_mercado":"Security Engineer","subfamilia":"Gestión de vulnerabilidades","nivel":"Senior / Lead","banda_inf":8500000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"[Estimado] Gestión de vulnerabilidades – Junior/Mid","categoria":"Ciberseguridad","nombre_mercado":"Security Engineer","subfamilia":"Gestión de vulnerabilidades","nivel":"Junior/Mid","banda_inf":6000000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":6000000,"total_devengo":6000000.0,"carga_prestacional":2125008.0,"costo_total":8125008.0},{"rol":"Análisis de seguridad – Mid (Semi-Senior)","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis de seguridad","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"Análisis de seguridad – Senior / Lead","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis de seguridad","nivel":"Senior / Lead","banda_inf":10000000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"Análisis de seguridad – Junior/Mid","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis de seguridad","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Gestión de seguridad – Senior","categoria":"Ciberseguridad","nombre_mercado":"Information Security Manager","subfamilia":"Gestión de seguridad","nivel":"Senior","banda_inf":9500000,"banda_sup":10500000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Gestión de seguridad – Senior / Lead","categoria":"Ciberseguridad","nombre_mercado":"Information Security Manager","subfamilia":"Gestión de seguridad","nivel":"Senior / Lead","banda_inf":10000000,"banda_sup":11500000,"tipo_salario":"Ordinario","salario_asignado":10000000,"total_devengo":10000000.0,"carga_prestacional":3541680.0,"costo_total":13541680.0},{"rol":"[Estimado] Gestión de seguridad – Junior/Mid","categoria":"Ciberseguridad","nombre_mercado":"Information Security Manager","subfamilia":"Gestión de seguridad","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Análisis y control de acceso - Senior","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis y control de acceso","nivel":"Senior","banda_inf":8000000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"[Estimado] Análisis y control de acceso – Senior / Lead","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis y control de acceso","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"[Estimado] Análisis y control de acceso – Junior/Mid","categoria":"Ciberseguridad","nombre_mercado":"Security Analyst","subfamilia":"Análisis y control de acceso","nivel":"Junior/Mid","banda_inf":5000000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5000000,"total_devengo":5000000.0,"carga_prestacional":1770840.0,"costo_total":6770840.0},{"rol":"Gerente de Proyectos– Junior/Mid","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Project Manager","subfamilia":"Project Management","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7000000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Agile / Product – Senior","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Scrum Master","subfamilia":"Agile / Product","nivel":"Senior","banda_inf":8000000,"banda_sup":10000000,"tipo_salario":"Ordinario","salario_asignado":8000000,"total_devengo":8000000.0,"carga_prestacional":2833344.0,"costo_total":10833344.0},{"rol":"[Estimado] Agile / Product – Senior / Lead","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Scrum Master","subfamilia":"Agile / Product","nivel":"Senior / Lead","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Agile / Product – Junior/Mid","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Scrum Master","subfamilia":"Agile / Product","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] Requerimientos – Junior/Mid","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Business Analyst","subfamilia":"Requerimientos","nivel":"Junior/Mid","banda_inf":4000000,"banda_sup":5000000,"tipo_salario":"Ordinario","salario_asignado":4000000,"total_devengo":4000000.0,"carga_prestacional":1416672.0,"costo_total":5416672.0},{"rol":"[Estimado] Soporte – Senior","categoria":"Soporte y servicio IT","nombre_mercado":"IT Support Engineer","subfamilia":"Soporte N2","nivel":"Senior","banda_inf":4500000,"banda_sup":6000000,"tipo_salario":"Ordinario","salario_asignado":4500000,"total_devengo":4500000.0,"carga_prestacional":1593756.0,"costo_total":6093756.0},{"rol":"[Estimado] Ingeniero de procesos – Senior / Lead","categoria":"Procesos, BPM y gestión documental","nombre_mercado":"Process Engineer","subfamilia":"Análisis de procesos","nivel":"Senior / Lead","banda_inf":7500000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7500000,"total_devengo":7500000.0,"carga_prestacional":2656260.0,"costo_total":10156260.0},{"rol":"[Estimado] Gestión documental – Junior/Mid","categoria":"Procesos, BPM y gestión documental","nombre_mercado":"Document Management Analyst","subfamilia":"Gestión documental","nivel":"Junior/Mid","banda_inf":3500000,"banda_sup":4500000,"tipo_salario":"Ordinario","salario_asignado":3500000,"total_devengo":3788095.0,"carga_prestacional":1283578.0,"costo_total":5071673.0},{"rol":"[Estimado] DevOps – Junior/Mid","categoria":"DevOps y CI/CD","nombre_mercado":"DevOps Engineer","subfamilia":"DevOps","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"[Estimado] DevOps – Senior / Lead","categoria":"DevOps y CI/CD","nombre_mercado":"DevOps Engineer","subfamilia":"DevOps","nivel":"Senior / Lead","banda_inf":12000000,"banda_sup":14000000,"tipo_salario":"Ordinario","salario_asignado":12000000,"total_devengo":12000000.0,"carga_prestacional":4250016.0,"costo_total":16250016.0},{"rol":"[Estimado] Arquitectura de Desarrollo – Senior","categoria":"Arquitectura y liderazgo técnico","nombre_mercado":"Software Architect","subfamilia":"Arquitectura","nivel":"Senior","banda_inf":14000000,"banda_sup":16000000,"tipo_salario":"Ordinario","salario_asignado":14000000,"total_devengo":14000000.0,"carga_prestacional":4958352.0,"costo_total":18958352.0},{"rol":"Arquitecto de Datos Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Architect","subfamilia":"Ingeniería de datos","nivel":"Senior / Lead","banda_inf":14000000,"banda_sup":16000000,"tipo_salario":"Ordinario","salario_asignado":14000000,"total_devengo":14000000.0,"carga_prestacional":4958352.0,"costo_total":18958352.0},{"rol":"Arquitecto de Datos","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Architect","subfamilia":"Ingeniería de datos","nivel":"Senior","banda_inf":12000000,"banda_sup":14000000,"tipo_salario":"Ordinario","salario_asignado":12000000,"total_devengo":12000000.0,"carga_prestacional":4250016.0,"costo_total":16250016.0},{"rol":"[Estimado] Stack específico · SAP ABAP – Junior/Mid","categoria":"Consultoría SAP","nombre_mercado":"SAP Consultant","subfamilia":"Consultor técnico SAP ABAP","nivel":"Junior/Mid","banda_inf":7000000,"banda_sup":9000000,"tipo_salario":"Ordinario","salario_asignado":7000000,"total_devengo":7000000.0,"carga_prestacional":2479176.0,"costo_total":9479176.0},{"rol":"[Estimado] Stack específico · SAP ABAP – Mid (Semi-Senior)","categoria":"Consultoría SAP","nombre_mercado":"SAP Consultant","subfamilia":"Consultor técnico SAP ABAP","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9000000,"total_devengo":9000000.0,"carga_prestacional":3187512.0,"costo_total":12187512.0},{"rol":"[Estimado] Stack específico · SAP ABAP – Senior","categoria":"Consultoría SAP","nombre_mercado":"SAP Consultant","subfamilia":"Consultor técnico SAP ABAP","nivel":"Senior","banda_inf":11000000,"banda_sup":13000000,"tipo_salario":"Ordinario","salario_asignado":11000000,"total_devengo":11000000.0,"carga_prestacional":3895848.0,"costo_total":14895848.0},{"rol":"[Estimado] Stack específico · SAP ABAP – Senior / Lead","categoria":"Consultoría SAP","nombre_mercado":"SAP Consultant","subfamilia":"Consultor técnico SAP ABAP","nivel":"Senior / Lead","banda_inf":14000000,"banda_sup":16000000,"tipo_salario":"Ordinario","salario_asignado":14000000,"total_devengo":14000000.0,"carga_prestacional":4958352.0,"costo_total":18958352.0},{"rol":"[Estimado] Agile / Product – Junior","categoria":"Gestión de proyectos y Agile","nombre_mercado":"Product Owner","subfamilia":"Agile / Product","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":6500000,"tipo_salario":"Ordinario","salario_asignado":5500000,"total_devengo":5500000.0,"carga_prestacional":1947924.0,"costo_total":7447924.0},{"rol":"Analisra de Gobierno de Datos Senior / Lead","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Governance Analyst","subfamilia":"Analytics / BI","nivel":"Senior / Lead","banda_inf":9500000,"banda_sup":11000000,"tipo_salario":"Ordinario","salario_asignado":9500000,"total_devengo":9500000.0,"carga_prestacional":3364596.0,"costo_total":12864596.0},{"rol":"Analista de Gobierno de Datos Senior","categoria":"Datos, Analytics e IA","nombre_mercado":"Data Governance Analyst","subfamilia":"Analytics / BI","nivel":"Senior","banda_inf":8500000,"banda_sup":9500000,"tipo_salario":"Ordinario","salario_asignado":8500000,"total_devengo":8500000.0,"carga_prestacional":3010428.0,"costo_total":11510428.0},{"rol":"Consultor SAP Ariba","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP Ariba","subfamilia":"SAP · Ariba","nivel":"Mid (Semi-Senior)","banda_inf":10000000,"banda_sup":14000000,"tipo_salario":"Honorarios","salario_asignado":12000000,"total_devengo":12000000,"carga_prestacional":4248000,"costo_total":16248000,"alpina":false,"notas":"Sourcing, contratos, catálogos"},{"rol":"Consultor SAP Ariba","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP Ariba","subfamilia":"SAP · Ariba","nivel":"Senior","banda_inf":14000000,"banda_sup":20000000,"tipo_salario":"Honorarios","salario_asignado":17000000,"total_devengo":17000000,"carga_prestacional":6018000,"costo_total":23018000,"alpina":false,"notas":"Ariba Network, integración SAP"},{"rol":"Consultor SAP BW","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP BW","subfamilia":"SAP · BI/BW","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"InfoObjects, DSO, reportes BEx"},{"rol":"Consultor SAP BW","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP BW","subfamilia":"SAP · BI/BW","nivel":"Senior","banda_inf":13000000,"banda_sup":19000000,"tipo_salario":"Honorarios","salario_asignado":16000000,"total_devengo":16000000,"carga_prestacional":5664000,"costo_total":21664000,"alpina":true,"notas":"BW/4HANA, AMDP, DTP avanzado"},{"rol":"Consultor SAP Analytics Cloud","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP Analytics Cloud","subfamilia":"SAP · BI/BW","nivel":"Senior","banda_inf":14000000,"banda_sup":20000000,"tipo_salario":"Honorarios","salario_asignado":17000000,"total_devengo":17000000,"carga_prestacional":6018000,"costo_total":23018000,"alpina":true,"notas":"SAC Planning, storytelling"},{"rol":"Consultor SAP EHS","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP EHS","subfamilia":"SAP · EHS","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"Salud, seguridad, gestión sustancias"},{"rol":"Consultor SAP EHS","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP EHS","subfamilia":"SAP · EHS","nivel":"Senior","banda_inf":13000000,"banda_sup":18000000,"tipo_salario":"Honorarios","salario_asignado":15500000,"total_devengo":15500000,"carga_prestacional":5487000,"costo_total":20987000,"alpina":true,"notas":"Normas alimentarias, REACH, SDS"},{"rol":"Consultor SAP FI","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP FI","subfamilia":"SAP · FI/CO","nivel":"Junior/Mid","banda_inf":6000000,"banda_sup":8000000,"tipo_salario":"Honorarios","salario_asignado":7000000,"total_devengo":7000000,"carga_prestacional":2478000,"costo_total":9478000,"alpina":true,"notas":"Cuentas por pagar, cobrar, activos fijos"},{"rol":"Consultor SAP FI","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP FI","subfamilia":"SAP · FI/CO","nivel":"Mid (Semi-Senior)","banda_inf":8000000,"banda_sup":12000000,"tipo_salario":"Honorarios","salario_asignado":10000000,"total_devengo":10000000,"carga_prestacional":3540000,"costo_total":13540000,"alpina":true,"notas":"GL, AP, AR, cierre financiero"},{"rol":"Consultor SAP CO","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP CO","subfamilia":"SAP · FI/CO","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"Centros de costo, órdenes internas"},{"rol":"Consultor SAP FI","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP FI","subfamilia":"SAP · FI/CO","nivel":"Senior","banda_inf":12000000,"banda_sup":18000000,"tipo_salario":"Honorarios","salario_asignado":15000000,"total_devengo":15000000,"carga_prestacional":5310000,"costo_total":20310000,"alpina":true,"notas":"IFRS, consolidación, treasury"},{"rol":"Consultor SAP CO","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP CO","subfamilia":"SAP · FI/CO","nivel":"Senior","banda_inf":13000000,"banda_sup":19000000,"tipo_salario":"Honorarios","salario_asignado":16000000,"total_devengo":16000000,"carga_prestacional":5664000,"costo_total":21664000,"alpina":true,"notas":"COPA, product costing, profit centers"},{"rol":"Consultor SAP GRC","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP GRC","subfamilia":"SAP · GRC","nivel":"Mid (Semi-Senior)","banda_inf":10000000,"banda_sup":14000000,"tipo_salario":"Honorarios","salario_asignado":12000000,"total_devengo":12000000,"carga_prestacional":4248000,"costo_total":16248000,"alpina":false,"notas":"Roles, SoD, Access Control"},{"rol":"Consultor SAP GRC","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP GRC","subfamilia":"SAP · GRC","nivel":"Senior","banda_inf":14000000,"banda_sup":20000000,"tipo_salario":"Honorarios","salario_asignado":17000000,"total_devengo":17000000,"carga_prestacional":6018000,"costo_total":23018000,"alpina":false,"notas":"GRC completo, auditoria, compliance"},{"rol":"Consultor SAP HCM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP HCM","subfamilia":"SAP · HCM/SF","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":12000000,"tipo_salario":"Honorarios","salario_asignado":10250000,"total_devengo":10250000,"carga_prestacional":3628500,"costo_total":13878500,"alpina":false,"notas":"Nómina, gestión de personal"},{"rol":"Consultor SuccessFactors","categoria":"Consultoría SAP","nombre_mercado":"Consultor SuccessFactors","subfamilia":"SAP · HCM/SF","nivel":"Mid (Semi-Senior)","banda_inf":10000000,"banda_sup":14000000,"tipo_salario":"Honorarios","salario_asignado":12000000,"total_devengo":12000000,"carga_prestacional":4248000,"costo_total":16248000,"alpina":false,"notas":"EC, Performance, Recruiting"},{"rol":"Consultor SAP HCM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP HCM","subfamilia":"SAP · HCM/SF","nivel":"Senior","banda_inf":12000000,"banda_sup":17000000,"tipo_salario":"Honorarios","salario_asignado":14500000,"total_devengo":14500000,"carga_prestacional":5133000,"costo_total":19633000,"alpina":false,"notas":"Org. management, ESS/MSS"},{"rol":"Consultor SuccessFactors","categoria":"Consultoría SAP","nombre_mercado":"Consultor SuccessFactors","subfamilia":"SAP · HCM/SF","nivel":"Senior","banda_inf":14000000,"banda_sup":20000000,"tipo_salario":"Honorarios","salario_asignado":17000000,"total_devengo":17000000,"carga_prestacional":6018000,"costo_total":23018000,"alpina":false,"notas":"SF completo, integración HCI"},{"rol":"Consultor SAP MM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP MM","subfamilia":"SAP · MM","nivel":"Junior/Mid","banda_inf":6000000,"banda_sup":8500000,"tipo_salario":"Honorarios","salario_asignado":7250000,"total_devengo":7250000,"carga_prestacional":2566500,"costo_total":9816500,"alpina":true,"notas":"Compras, inventarios básicos"},{"rol":"Consultor SAP MM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP MM","subfamilia":"SAP · MM","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":12500000,"tipo_salario":"Honorarios","salario_asignado":10500000,"total_devengo":10500000,"carga_prestacional":3717000,"costo_total":14217000,"alpina":true,"notas":"Gestión de materias primas, MRP"},{"rol":"Consultor SAP MM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP MM","subfamilia":"SAP · MM","nivel":"Senior","banda_inf":12500000,"banda_sup":18000000,"tipo_salario":"Honorarios","salario_asignado":15250000,"total_devengo":15250000,"carga_prestacional":5398500,"costo_total":20648500,"alpina":true,"notas":"Estrategia de aprovisionamiento, SRM"},{"rol":"Consultor SAP PM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP PM","subfamilia":"SAP · PM","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"Mantenimiento preventivo/correctivo"},{"rol":"Consultor SAP PM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP PM","subfamilia":"SAP · PM","nivel":"Senior","banda_inf":13000000,"banda_sup":18000000,"tipo_salario":"Honorarios","salario_asignado":15500000,"total_devengo":15500000,"carga_prestacional":5487000,"costo_total":20987000,"alpina":true,"notas":"Estrategias mantenimiento, integración PP"},{"rol":"Consultor SAP PP","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP PP","subfamilia":"SAP · PP","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"Órdenes de producción, BOM, ruteo"},{"rol":"Consultor SAP PP","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP PP","subfamilia":"SAP · PP","nivel":"Senior","banda_inf":13000000,"banda_sup":19000000,"tipo_salario":"Honorarios","salario_asignado":16000000,"total_devengo":16000000,"carga_prestacional":5664000,"costo_total":21664000,"alpina":true,"notas":"MRP II, planificación capacidades, MES"},{"rol":"Consultor SAP QM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP QM","subfamilia":"SAP · QM","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":12000000,"tipo_salario":"Honorarios","salario_asignado":10250000,"total_devengo":10250000,"carga_prestacional":3628500,"costo_total":13878500,"alpina":true,"notas":"Inspecciones, lotes, certificados calidad"},{"rol":"Consultor SAP QM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP QM","subfamilia":"SAP · QM","nivel":"Senior","banda_inf":12000000,"banda_sup":17000000,"tipo_salario":"Honorarios","salario_asignado":14500000,"total_devengo":14500000,"carga_prestacional":5133000,"costo_total":19633000,"alpina":true,"notas":"GMP, trazabilidad, normas alimentarias"},{"rol":"Consultor S/4HANA","categoria":"Consultoría SAP","nombre_mercado":"Consultor S/4HANA","subfamilia":"SAP · S/4HANA","nivel":"Mid (Semi-Senior)","banda_inf":11000000,"banda_sup":15000000,"tipo_salario":"Honorarios","salario_asignado":13000000,"total_devengo":13000000,"carga_prestacional":4602000,"costo_total":17602000,"alpina":true,"notas":"Migración, Fiori, nuevos procesos"},{"rol":"Consultor S/4HANA","categoria":"Consultoría SAP","nombre_mercado":"Consultor S/4HANA","subfamilia":"SAP · S/4HANA","nivel":"Senior","banda_inf":15000000,"banda_sup":22000000,"tipo_salario":"Honorarios","salario_asignado":18500000,"total_devengo":18500000,"carga_prestacional":6549000,"costo_total":25049000,"alpina":true,"notas":"Transformación digital, conversión"},{"rol":"Arquitecto SAP","categoria":"Consultoría SAP","nombre_mercado":"Arquitecto SAP","subfamilia":"SAP · S/4HANA","nivel":"Senior","banda_inf":20000000,"banda_sup":30000000,"tipo_salario":"Honorarios","salario_asignado":25000000,"total_devengo":25000000,"carga_prestacional":8850000,"costo_total":33850000,"alpina":true,"notas":"Blueprint, roadmap, gobierno técnico"},{"rol":"Consultor SAP SD","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP SD","subfamilia":"SAP · SD","nivel":"Junior/Mid","banda_inf":6000000,"banda_sup":8500000,"tipo_salario":"Honorarios","salario_asignado":7250000,"total_devengo":7250000,"carga_prestacional":2566500,"costo_total":9816500,"alpina":true,"notas":"Pedidos, entregas, facturación básica"},{"rol":"Consultor SAP SD","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP SD","subfamilia":"SAP · SD","nivel":"Mid (Semi-Senior)","banda_inf":8500000,"banda_sup":12500000,"tipo_salario":"Honorarios","salario_asignado":10500000,"total_devengo":10500000,"carga_prestacional":3717000,"costo_total":14217000,"alpina":true,"notas":"Pricing, créditos, rebates"},{"rol":"Consultor SAP SD","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP SD","subfamilia":"SAP · SD","nivel":"Senior","banda_inf":12500000,"banda_sup":18000000,"tipo_salario":"Honorarios","salario_asignado":15250000,"total_devengo":15250000,"carga_prestacional":5398500,"costo_total":20648500,"alpina":true,"notas":"Trade promotions, canales distribución"},{"rol":"Consultor SAP TM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP TM","subfamilia":"SAP · TM","nivel":"Mid (Semi-Senior)","banda_inf":10000000,"banda_sup":14000000,"tipo_salario":"Honorarios","salario_asignado":12000000,"total_devengo":12000000,"carga_prestacional":4248000,"costo_total":16248000,"alpina":true,"notas":"Transporte, tarifas, carriers"},{"rol":"Consultor SAP TM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP TM","subfamilia":"SAP · TM","nivel":"Senior","banda_inf":14000000,"banda_sup":20000000,"tipo_salario":"Honorarios","salario_asignado":17000000,"total_devengo":17000000,"carga_prestacional":6018000,"costo_total":23018000,"alpina":true,"notas":"Optimización rutas, freight mgmt"},{"rol":"Desarrollador SAP ABAP","categoria":"Consultoría SAP","nombre_mercado":"Desarrollador SAP ABAP","subfamilia":"SAP · Técnico","nivel":"Junior/Mid","banda_inf":5500000,"banda_sup":7500000,"tipo_salario":"Honorarios","salario_asignado":6500000,"total_devengo":6500000,"carga_prestacional":2301000,"costo_total":8801000,"alpina":true,"notas":"Reports, módulos de función, BDC"},{"rol":"Desarrollador SAP ABAP","categoria":"Consultoría SAP","nombre_mercado":"Desarrollador SAP ABAP","subfamilia":"SAP · Técnico","nivel":"Mid (Semi-Senior)","banda_inf":7500000,"banda_sup":11000000,"tipo_salario":"Honorarios","salario_asignado":9250000,"total_devengo":9250000,"carga_prestacional":3274500,"costo_total":12524500,"alpina":true,"notas":"OOP ABAP, BAdIs, enhancement spots"},{"rol":"Consultor SAP Basis","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP Basis","subfamilia":"SAP · Técnico","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"Transports, roles, usuarios, monitoring"},{"rol":"Consultor SAP PI/PO","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP PI/PO","subfamilia":"SAP · Técnico","nivel":"Mid (Semi-Senior)","banda_inf":9500000,"banda_sup":13500000,"tipo_salario":"Honorarios","salario_asignado":11500000,"total_devengo":11500000,"carga_prestacional":4071000,"costo_total":15571000,"alpina":true,"notas":"iFlows, integraciones EDI/REST"},{"rol":"Desarrollador SAP ABAP","categoria":"Consultoría SAP","nombre_mercado":"Desarrollador SAP ABAP","subfamilia":"SAP · Técnico","nivel":"Senior","banda_inf":11000000,"banda_sup":16000000,"tipo_salario":"Honorarios","salario_asignado":13500000,"total_devengo":13500000,"carga_prestacional":4779000,"costo_total":18279000,"alpina":true,"notas":"CDS Views, RAP, ABAP en HANA"},{"rol":"Consultor SAP Basis","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP Basis","subfamilia":"SAP · Técnico","nivel":"Senior","banda_inf":13000000,"banda_sup":20000000,"tipo_salario":"Honorarios","salario_asignado":16500000,"total_devengo":16500000,"carga_prestacional":5841000,"costo_total":22341000,"alpina":true,"notas":"Landscapes, alta disponibilidad, seguridad"},{"rol":"Consultor SAP PI/PO","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP PI/PO","subfamilia":"SAP · Técnico","nivel":"Senior","banda_inf":13500000,"banda_sup":19000000,"tipo_salario":"Honorarios","salario_asignado":16250000,"total_devengo":16250000,"carga_prestacional":5752500,"costo_total":22002500,"alpina":true,"notas":"CPI/Integration Suite, APIs"},{"rol":"Consultor SAP WM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP WM","subfamilia":"SAP · WM/EWM","nivel":"Mid (Semi-Senior)","banda_inf":9000000,"banda_sup":13000000,"tipo_salario":"Honorarios","salario_asignado":11000000,"total_devengo":11000000,"carga_prestacional":3894000,"costo_total":14894000,"alpina":true,"notas":"Almacenes, transferencias, inventario"},{"rol":"Consultor SAP WM","categoria":"Consultoría SAP","nombre_mercado":"Consultor SAP WM","subfamilia":"SAP · WM/EWM","nivel":"Senior","banda_inf":13000000,"banda_sup":19000000,"tipo_salario":"Honorarios","salario_asignado":16000000,"total_devengo":16000000,"carga_prestacional":5664000,"costo_total":21664000,"alpina":true,"notas":"EWM, layouts, RFID, slotting"}];
+
+// ─── CARGA SOCIAL CINTE (según archivo oficial) ───
+const SMMLV        = 1423500;          // SMMLV 2026
+const TOPE_PARA    = SMMLV * 10;       // $14,235,000 — tope parafiscales
+const CARGA_NORMAL = 0.3836;           // ≤ 10 SMMLV  → 38.36%
+const CARGA_ALTA   = 0.2936;           // > 10 SMMLV  → 29.36% (sin SENA+ICBF+Caja = -9%)
+const HORAS_MES    = 176;
+
+// Desglose informativo (suman 38.36%)
+const DESGLOSE = [
+  { label:'Pensión empleador',       pct:0.12,    grp:'seg', siempre:true  },
+  { label:'Salud empleador',         pct:0.085,   grp:'seg', siempre:true  },
+  { label:'ARL Riesgo I',            pct:0.00522, grp:'seg', siempre:true  },
+  { label:'SENA',                    pct:0.02,    grp:'par', siempre:false },
+  { label:'ICBF',                    pct:0.03,    grp:'par', siempre:false },
+  { label:'Caja de compensación',    pct:0.04,    grp:'par', siempre:false },
+  { label:'Cesantías',               pct:0.0833,  grp:'pre', siempre:true  },
+  { label:'Intereses cesantías',     pct:0.01,    grp:'pre', siempre:true  },
+  { label:'Prima de servicios',      pct:0.0083,  grp:'pre', siempre:true  },
+];
+// Nota: el desglose es referencial; el factor exacto de Cinte es 38.36% / 29.36%
+
+function factorCarga(sal) {
+  return sal > TOPE_PARA ? CARGA_ALTA : CARGA_NORMAL;
+}
+function calcCarga(sal) {
+  const f = factorCarga(sal);
+  return { carga: Math.round(sal * f), factor: f, sobretope: sal > TOPE_PARA };
+}
+function costoEmpresa(sal) {
+  const { carga } = calcCarga(sal);
+  return sal + carga;
+}
+function valorHora(sal) {
+  return Math.round(sal / HORAS_MES);
+}
+function valorHoraCarga(sal) {
+  return Math.round(costoEmpresa(sal) / HORAS_MES);
+}
+
+function loadCustom(){try{return JSON.parse(localStorage.getItem('cinte_custom')||'[]');}catch{return[];}}
+function saveCustomStorage(d){localStorage.setItem('cinte_custom',JSON.stringify(d));}
+function loadHistory(){try{return JSON.parse(localStorage.getItem('cinte_hist')||'[]');}catch{return[];}}
+function saveHistory(d){localStorage.setItem('cinte_hist',JSON.stringify(d.slice(0,60)));}
+
+let customRoles = loadCustom();
+let allRoles = [...ROLES_BASE, ...customRoles.map(r=>({...r,_custom:true}))];
+let selected = null, activeTab = 'desglose', aspiracion = 0;
+let sliderVal = 0; // current slider salary
+
+const COP = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
+const SHORT = n => n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':String(n);
+const PCT = n => (n*100).toFixed(2)+'%';
+function nclass(n){return {'Junior/Mid':'nv-junior','Mid (Semi-Senior)':'nv-mid','Senior':'nv-senior','Senior / Lead':'nv-lead'}[n]||'nv-mid';}
+
+function init(){
+  const cats=[...new Set(allRoles.map(r=>r.categoria))].filter(Boolean).sort();
+  [document.getElementById('catFilter'),document.getElementById('mCat')].forEach(s=>{
+    cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;s.appendChild(o);});
+  });
+  const p=new URLSearchParams(location.search);
+  aspiracion=parseInt(p.get('aspiracion')||p.get('aspiracion_salarial')||'0');
+  document.getElementById('totalPill').textContent=allRoles.length+' roles';
+  updateCustomPill(); filterRoles();
+}
+
+function filterRoles(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const cat=document.getElementById('catFilter').value;
+  const niv=document.getElementById('nivFilter').value;
+  const f=allRoles.filter(r=>{
+    if(cat&&r.categoria!==cat)return false;
+    if(niv&&r.nivel!==niv)return false;
+    if(q&&![r.rol,r.nombre_mercado||'',r.subfamilia||'',r.categoria,r.nivel].join(' ').toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('sidebarCount').textContent=f.length+' de '+allRoles.length+' roles';
+  const list=document.getElementById('roleList');
+  list.innerHTML='';
+  f.forEach(r=>{
+    const d=document.createElement('div');
+    const active=selected&&selected.rol===r.rol&&selected.nivel===r.nivel&&selected.categoria===r.categoria;
+    d.className='role-item'+(active?' active':'');
+    d.onclick=()=>selectRole(r);
+    const isSAP=r.categoria==='Consultoría SAP';
+    d.innerHTML=`
+      <div class="ri-top">
+        <div class="ri-name">${r.rol}${r._custom?' <span style="color:var(--gold);font-size:10px">★</span>':''}</div>
+        <div class="ri-price">${SHORT(r.banda_inf)}</div>
+      </div>
+      <div class="ri-bottom">
+        <span class="nbadge ${nclass(r.nivel)}">${r.nivel||'—'}</span>
+        ${isSAP?'<span class="sap-badge">SAP</span>':''}
+        ${r.alpina?'<span class="alpina-badge">✓ Alpina</span>':''}
+        <span class="ri-cat">${(r.subfamilia||r.categoria).replace('SAP · ','')}</span>
+      </div>`;
+    list.appendChild(d);
+  });
+}
+
+function selectRole(role){
+  selected=role;
+  sliderVal=role.banda_inf; // start slider at piso
+  activeTab='desglose';
+  filterRoles();
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('detailPanel').style.display='block';
+  renderDetail();
+  document.getElementById('mainPanel').scrollTop=0;
+}
+
+function renderDetail(){
+  const r=selected; if(!r)return;
+  const cP=calcCarga(r.banda_inf);
+  const cT=calcCarga(r.banda_sup);
+  const cS=calcCarga(sliderVal);
+  const pctSlider=r.banda_sup>r.banda_inf?((sliderVal-r.banda_inf)/(r.banda_sup-r.banda_inf)*100):0;
+
+  document.getElementById('detailPanel').innerHTML=`
+    <div class="breadcrumb"><span>${r.categoria}</span><span style="color:var(--border2)">›</span><span>${r.subfamilia||'—'}</span></div>
+    <div class="dtitle">${r.rol}</div>
+    <div class="dsubtitle">${r.nombre_mercado||r.rol}</div>
+    <div class="dpills">
+      <span class="nbadge ${nclass(r.nivel)}" style="padding:5px 14px;font-size:12px">${r.nivel||'—'}</span>
+      <span class="dpill-tipo">${r.tipo_salario||'Ordinario'}</span>
+      ${r.categoria==='Consultoría SAP'?'<span class="dpill-sap">SAP Staffing</span>':''}
+      ${r.alpina?'<span class="dpill-alpina">✓ Relevante Alpina</span>':''}
+      ${r._custom?'<span class="dpill-custom">★ Personalizado</span>':''}
+    </div>
+
+    <div class="metrics">
+      <div class="mcard mc-navy">
+        <div class="mlabel">Banda Piso</div>
+        <div class="mvalue mv-navy">${COP(r.banda_inf)}</div>
+        <div class="msub">Costo empresa: <strong>${COP(r.banda_inf+cP.carga)}</strong></div>
+        <div class="msub">Carga: <strong>${PCT(cP.factor)}</strong></div>
+      </div>
+      <div class="mcard mc-gold">
+        <div class="mlabel">Banda Techo</div>
+        <div class="mvalue mv-gold">${COP(r.banda_sup)}</div>
+        <div class="msub">Costo empresa: <strong>${COP(r.banda_sup+cT.carga)}</strong></div>
+        <div class="msub">Carga: <strong>${PCT(cT.factor)}${cT.sobretope?' ⚠️':''}</strong></div>
+      </div>
+      <div class="slider-card">
+        <div class="mlabel">Ajustar salario</div>
+        <div class="slider-sal" id="sliderSal">${COP(sliderVal)}</div>
+        <div class="slider-costo" id="sliderCosto">Costo empresa: ${COP(sliderVal+cS.carga)}</div>
+        <div class="slider-hora" id="sliderHora">Valor/h con carga: ${COP(valorHoraCarga(sliderVal))}</div>
+        <div class="range-wrap" style="margin-top:10px">
+          <input type="range" id="salSlider"
+            min="${r.banda_inf}" max="${r.banda_sup}" step="50000"
+            value="${sliderVal}"
+            style="--pct:${pctSlider.toFixed(1)}%"
+            oninput="updateSlider(this.value)">
+        </div>
+        <div class="slider-labels"><span>${SHORT(r.banda_inf)}</span><span>${SHORT(r.banda_sup)}</span></div>
+        <span class="carga-tag" id="sliderCargaTag">Carga ${PCT(cS.factor)}${cS.sobretope?' · supera 10 SMMLV':''}</span>
+      </div>
+    </div>
+
+    <div class="hora-section">
+      <div class="hora-cell">
+        <div class="mlabel" style="margin-bottom:6px">Valor hora — piso</div>
+        <div class="hora-val mv-navy">${COP(valorHora(r.banda_inf))}</div>
+        <div class="hora-sub">Con carga: <strong style="color:var(--green)">${COP(valorHoraCarga(r.banda_inf))}</strong> / h</div>
+      </div>
+      <div class="hora-cell">
+        <div class="mlabel" style="margin-bottom:6px">Valor hora — techo</div>
+        <div class="hora-val mv-gold">${COP(valorHora(r.banda_sup))}</div>
+        <div class="hora-sub">Con carga: <strong style="color:var(--green)">${COP(valorHoraCarga(r.banda_sup))}</strong> / h</div>
+      </div>
+      <div class="hora-cell">
+        <div class="mlabel" style="margin-bottom:6px">Valor hora — slider</div>
+        <div class="hora-val mv-navy" id="horaSliderBase">${COP(valorHora(sliderVal))}</div>
+        <div class="hora-sub">Con carga: <strong style="color:var(--green)" id="horaSliderCarga">${COP(valorHoraCarga(sliderVal))}</strong> / h</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab${activeTab==='desglose'?' active':''}" onclick="swTab('desglose')">📊 Desglose</div>
+      <div class="tab${activeTab==='simular'?' active':''}" onclick="swTab('simular')">🧮 Simular</div>
+      <div class="tab${activeTab==='ia'?' active':''}" onclick="swTab('ia')">✦ IA</div>
+      <div class="tab${activeTab==='zoho'?' active':''}" onclick="swTab('zoho')">🔗 Zoho</div>
+      <div class="tab${activeTab==='historial'?' active':''}" onclick="swTab('historial')">📋 Historial</div>
+    </div>
+    <div id="tabBody"></div>`;
+  renderTab();
+}
+
+// Update slider without full re-render — fast
+function updateSlider(val){
+  sliderVal = parseInt(val);
+  const r = selected; if(!r) return;
+  const cS = calcCarga(sliderVal);
+  const pct = r.banda_sup>r.banda_inf ? ((sliderVal-r.banda_inf)/(r.banda_sup-r.banda_inf)*100) : 0;
+
+  // Update slider track color
+  document.getElementById('salSlider').style.setProperty('--pct', pct.toFixed(1)+'%');
+
+  document.getElementById('sliderSal').textContent = COP(sliderVal);
+  document.getElementById('sliderCosto').textContent = 'Costo empresa: '+COP(sliderVal+cS.carga);
+  document.getElementById('sliderHora').textContent = 'Valor/h con carga: '+COP(valorHoraCarga(sliderVal));
+  document.getElementById('sliderCargaTag').textContent = 'Carga '+PCT(cS.factor)+(cS.sobretope?' · supera 10 SMMLV':'');
+  document.getElementById('horaSliderBase').textContent = COP(valorHora(sliderVal));
+  document.getElementById('horaSliderCarga').textContent = COP(valorHoraCarga(sliderVal));
+}
+
+function swTab(t){activeTab=t;renderDetail();document.getElementById('mainPanel').scrollTop=220;}
+
+function desgloseTable(sal){
+  const c=calcCarga(sal);
+  const grpCol={seg:'var(--navy)',par:'var(--gold)',pre:'var(--green)'};
+  const rows=DESGLOSE.map(d=>{
+    const aplica=d.siempre||!c.sobretope;
+    const monto=aplica?Math.round(sal*d.pct):0;
+    return `<div class="brow">
+      <div class="brow-l">
+        <div class="bdot" style="background:${grpCol[d.grp]};opacity:${aplica?1:.3}"></div>
+        <span style="${!aplica?'color:var(--text3)':''}">${d.label}</span>
+        ${!aplica?'<span class="excluye-tag">excluye &gt;10 SMMLV</span>':''}
+      </div>
+      <div class="brow-r">
+        <span class="bval" style="color:${aplica?grpCol[d.grp]:'var(--text3)'}">${aplica?COP(monto):'—'}</span>
+        <span class="bpct">${PCT(d.pct)}</span>
+      </div>
+    </div>`;
+  }).join('');
+  return `${rows}
+    <div class="brow-total">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+        <div class="bdot" style="background:var(--gold)"></div>
+        Total carga Cinte · ${PCT(c.factor)}
+        ${c.sobretope?'<span class="excluye-tag" style="background:var(--amber-bg);color:var(--amber)">supera 10 SMMLV</span>':''}
+      </div>
+      <span style="color:var(--gold);font-size:14px">${COP(c.carga)}</span>
+    </div>`;
+}
+
+function renderTab(){
+  const r=selected; const el=document.getElementById('tabBody'); if(!el||!r)return;
+  const cP=calcCarga(r.banda_inf), cT=calcCarga(r.banda_sup);
+  const pct=r.banda_sup>r.banda_inf?((r.banda_inf-r.banda_inf)/(r.banda_sup-r.banda_inf)*100).toFixed(1):0;
+
+  if(activeTab==='desglose'){
+    el.innerHTML=`
+      <div class="section">
+        <div class="stitle">Desglose carga social — Banda Piso (${COP(r.banda_inf)})</div>
+        ${desgloseTable(r.banda_inf)}
+      </div>
+      <div class="section">
+        <div class="stitle">Desglose carga social — Banda Techo (${COP(r.banda_sup)})</div>
+        ${desgloseTable(r.banda_sup)}
+        ${cT.sobretope?`<div class="alert a-warn" style="margin-top:12px">⚠️ Supera los 10 SMMLV (${COP(TOPE_PARA)}). SENA, ICBF y Caja <strong>no aplican</strong>. Carga efectiva: <strong>${PCT(CARGA_ALTA)}</strong></div>`:''}
+      </div>
+      ${r.notas&&r.notas!='nan'?`<div class="section"><div class="stitle">Notas del rol</div><div style="font-size:13px;color:var(--text2)">📌 ${r.notas}</div></div>`:''}`;
+  }
+
+  else if(activeTab==='simular'){
+    const aspVal=aspiracion>0?aspiracion:'';
+    el.innerHTML=`
+      <div class="section">
+        <div class="stitle">Simular contratación</div>
+        ${aspiracion>0?`<div class="alert a-ok">💬 Aspiración desde Zoho: <strong>${COP(aspiracion)}</strong></div>`:''}
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">También puedes usar el slider de arriba para explorar rápidamente.</div>
+        <div class="sim-row">
+          <input type="number" class="sim-input" id="simSal" placeholder="Salario a contratar (COP)" value="${aspVal}" oninput="calcSim()">
+          <button class="sim-btn" onclick="calcSim()">Calcular</button>
+        </div>
+        <div id="simOut"></div>
+        <button class="save-btn" onclick="guardar()">📌 Guardar en historial</button>
+      </div>`;
+    if(aspVal) setTimeout(calcSim,50);
+  }
+
+  else if(activeTab==='ia'){
+    el.innerHTML=`
+      <div class="ai-panel">
+        <div class="ai-head">
+          <div class="ai-icon-box">✦</div>
+          <div class="ai-head-text">
+            <h3>Asistente de Compensación</h3>
+            <p>Consulta sobre mercado, carga social, valor hora o estrategia salarial</p>
+          </div>
+        </div>
+        <textarea class="ai-ta" id="aiQ" placeholder="Ej: ¿Cuál es el costo real por hora de este perfil? ¿Este salario supera el tope de parafiscales?"></textarea>
+        <button class="ai-send" id="aiBtn" onclick="askAI()">✦ Consultar</button>
+        <div id="aiOut" style="display:none"></div>
+      </div>`;
+  }
+
+  else if(activeTab==='zoho'){
+    const cS=calcCarga(sliderVal);
+    const fields=[
+      ['Job_Title',r.rol],['Department',r.categoria],
+      ['Job_Opening_Name',r.nombre_mercado||r.rol],
+      ['Salary_From',r.banda_inf],['Salary_To',r.banda_sup],
+      ['CF_Subfamilia',r.subfamilia||''],['CF_Nivel',r.nivel],
+      ['CF_Costo_Empresa_Piso',r.banda_inf+cP.carga],
+      ['CF_Costo_Empresa_Techo',r.banda_sup+cT.carga],
+      ['CF_Valor_Hora_Piso',valorHoraCarga(r.banda_inf)],
+      ['CF_Valor_Hora_Techo',valorHoraCarga(r.banda_sup)],
+      ['CF_Carga_Piso_PCT',PCT(cP.factor)],
+      ['CF_Carga_Techo_PCT',PCT(cT.factor)],
+      ['CF_Tipo_Salario',r.tipo_salario||'Ordinario'],
+    ];
+    const jobj=Object.fromEntries(fields);
+    el.innerHTML=`
+      <div class="section">
+        <div class="stitle">Campos Zoho Recruit</div>
+        <div class="zoho-grid">${fields.map(([k,v])=>`<div class="zfield"><div class="zkey">${k}</div><div class="zval">${typeof v==='number'?COP(v):v}</div><button class="copy-micro" onclick="navigator.clipboard.writeText('${String(v).replace(/'/g,"\'")}')">📋 Copiar</button></div>`).join('')}</div>
+      </div>
+      <div class="section">
+        <div class="stitle">JSON API Zoho v2</div>
+        <div class="json-block">${JSON.stringify(jobj,null,2).replace(/</g,'&lt;')}</div>
+        <button class="copy-main" onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(jobj)},null,2))">📋 Copiar JSON</button>
+      </div>
+      <div class="section" style="border-color:var(--gold-border);background:var(--gold-bg)">
+        <div class="stitle">URL desde Zoho (con aspiración salarial)</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7">En Zoho Recruit → <strong>Configuración › Custom Buttons</strong>:<br><br>
+        <code style="background:var(--white);border:1px solid var(--border);padding:6px 10px;border-radius:6px;font-size:11px;display:block;word-break:break-all">https://tu-sitio.com/cotizador.html?aspiracion_salarial=&#123;Salary_Expected&#125;</code></div>
+      </div>`;
+  }
+
+  else if(activeTab==='historial'){
+    const hist=loadHistory(), forThis=hist.filter(h=>h.rol===r.rol&&h.nivel===r.nivel);
+    el.innerHTML=`
+      <div class="section">
+        <div class="stitle">Contrataciones — ${r.rol}</div>
+        ${forThis.length===0?'<div class="hempty">Sin registros aún. Simula y guarda.</div>':
+          forThis.map(h=>`<div class="hitem"><div><div class="hname">${h.rol}</div><div class="hmeta">${h.fecha} · Costo: ${COP(h.costo)} · Valor/h: ${COP(h.hora)} · Carga: ${h.pctCarga}</div></div><div class="hsal">${COP(h.salario)}</div></div>`).join('')}
+      </div>
+      ${hist.length>0?`<div class="section"><div class="stitle">Historial global</div>${hist.slice(0,20).map(h=>`<div class="hitem"><div><div class="hname">${h.rol}</div><div class="hmeta">${h.fecha} · ${h.nivel} · ${COP(h.hora)}/h · ${h.pctCarga}</div></div><div class="hsal">${COP(h.salario)}</div></div>`).join('')}</div>`:''}`;
+  }
+}
+
+function calcSim(){
+  const r=selected;
+  const sal=parseFloat(document.getElementById('simSal')?.value||'0');
+  const out=document.getElementById('simOut'); if(!out||!sal){if(out)out.innerHTML='';return;}
+  const c=calcCarga(sal);
+  const costo=sal+c.carga;
+  const warn=sal<r.banda_inf?`⚠️ ${COP(r.banda_inf-sal)} por debajo del piso`:sal>r.banda_sup?`⚠️ ${COP(sal-r.banda_sup)} por encima del techo`:'';
+  out.innerHTML=`
+    ${warn?`<div class="alert a-warn">${warn}</div>`:`<div class="alert a-ok">✓ Dentro de la banda</div>`}
+    ${c.sobretope?`<div class="alert a-warn">⚠️ Supera 10 SMMLV (${COP(TOPE_PARA)}). Carga aplicada: <strong>${PCT(CARGA_ALTA)}</strong> (sin SENA+ICBF+Caja)</div>`:''}
+    <div class="sim-result">
+      <div class="srrow"><span class="srrow-l">Salario base</span><span>${COP(sal)}</span></div>
+      <div class="srrow"><span class="srrow-l">Carga social Cinte (${PCT(c.factor)})</span><span style="color:var(--gold)">${COP(c.carga)}</span></div>
+      <div class="srrow"><span class="srrow-l">Costo total empresa</span><span style="color:var(--green)">${COP(costo)}</span></div>
+      <div class="srrow"><span class="srrow-l">Valor hora base (÷176)</span><span style="color:var(--navy)">${COP(valorHora(sal))} / h</span></div>
+      <div class="srrow"><span class="srrow-l">Valor hora con carga</span><span style="color:var(--green)">${COP(valorHoraCarga(sal))} / h</span></div>
+    </div>`;
+}
+
+function guardar(){
+  const r=selected; const sal=parseFloat(document.getElementById('simSal')?.value||'0');
+  if(!sal)return alert('Ingresa un salario primero');
+  const c=calcCarga(sal);
+  const hist=loadHistory();
+  hist.unshift({rol:r.rol,nivel:r.nivel,salario:sal,costo:sal+c.carga,hora:valorHoraCarga(sal),pctCarga:PCT(c.factor),fecha:new Date().toLocaleDateString('es-CO')});
+  saveHistory(hist);
+  const btn=event.target; btn.textContent='✓ Guardado'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)';
+  setTimeout(()=>{btn.textContent='📌 Guardar en historial';btn.style.borderColor='';btn.style.color='';},2000);
+}
+
+async function askAI(){
+  const r=selected; const q=document.getElementById('aiQ').value.trim(); if(!q)return;
+  const btn=document.getElementById('aiBtn'); const out=document.getElementById('aiOut');
+  btn.disabled=true; out.style.display='block';
+  out.innerHTML='<div class="ai-resp"><span class="ai-thinking">✦ Consultando…</span></div>';
+  const cP=calcCarga(r.banda_inf), cT=calcCarga(r.banda_sup);
+  const ctx=`Eres el asistente de compensación de Cinte Colombia 2026.
+Rol: ${r.rol} | Categoría: ${r.categoria} | Nivel: ${r.nivel}
+Banda: ${COP(r.banda_inf)} – ${COP(r.banda_sup)}
+Carga social Cinte: ${PCT(CARGA_NORMAL)} (≤10 SMMLV) / ${PCT(CARGA_ALTA)} (>10 SMMLV)
+SMMLV 2026: ${COP(SMMLV)} | Tope parafiscales: ${COP(TOPE_PARA)}
+Costo empresa piso: ${COP(r.banda_inf+cP.carga)} (carga ${PCT(cP.factor)})
+Costo empresa techo: ${COP(r.banda_sup+cT.carga)} (carga ${PCT(cT.factor)}${cT.sobretope?' - sin parafiscales':''})
+Valor hora piso (con carga): ${COP(valorHoraCarga(r.banda_inf))}
+Valor hora techo (con carga): ${COP(valorHoraCarga(r.banda_sup))}
+${r.notas&&r.notas!='nan'?'Notas: '+r.notas:''}
+Responde en español, conciso y útil.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:ctx,messages:[{role:'user',content:q}]})});
+    const data=await res.json();
+    out.innerHTML=`<div class="ai-resp">${(data.content?.[0]?.text||'Sin respuesta').replace(/</g,'&lt;')}</div>`;
+  }catch{out.innerHTML='<div class="ai-resp" style="color:var(--red)">⚠️ Error de conexión.</div>';}
+  btn.disabled=false;
+}
+
+function openModal(){
+  document.getElementById('modalOverlay').style.display='flex';
+  ['mNombre','mDesc','mBandaInf','mBandaSup'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mCat').value=''; document.getElementById('mNivel').value='';
+  const b=document.getElementById('aiSugBox'); b.style.display='none'; b.innerHTML='';
+}
+function closeModal(){document.getElementById('modalOverlay').style.display='none';}
+
+async function aiSuggest(){
+  const nombre=document.getElementById('mNombre').value.trim();
+  if(!nombre)return alert('Ingresa el nombre del cargo');
+  const btn=document.getElementById('btnAI'); const box=document.getElementById('aiSugBox');
+  btn.disabled=true; box.style.display='block'; box.innerHTML='<em style="color:var(--text3)">✦ Analizando…</em>';
+  const cats=[...new Set(ROLES_BASE.map(r=>r.categoria))].sort();
+  const samples=ROLES_BASE.slice(0,30).map(r=>`${r.rol} → ${r.categoria}, ${r.nivel}, ${r.banda_inf}-${r.banda_sup}`).join('\n');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:`Clasifica en taxonomía TI Cinte Colombia 2026. Cargo: "${nombre}". Desc: "${document.getElementById('mDesc').value||'N/A'}". Categorías: ${cats.join(', ')}. Muestras: ${samples}. Responde SOLO JSON sin markdown: {"categoria":"...","nivel":"Junior/Mid|Mid (Semi-Senior)|Senior|Senior / Lead","banda_inf":NUMERO,"banda_sup":NUMERO,"justificacion":"breve"}`}]})});
+    const data=await res.json();
+    const s=JSON.parse(data.content?.[0]?.text.replace(/```json|```/g,'').trim()||'{}');
+    box.innerHTML=`<strong style="color:var(--navy)">✦ Sugerencia:</strong> <strong>${s.categoria}</strong> · <strong>${s.nivel}</strong><br>Banda: <strong style="color:var(--green)">${COP(s.banda_inf)} – ${COP(s.banda_sup)}</strong><br><em style="color:var(--text3);font-size:11px">${s.justificacion}</em>`;
+    document.getElementById('mCat').value=s.categoria||''; document.getElementById('mNivel').value=s.nivel||'';
+    document.getElementById('mBandaInf').value=s.banda_inf||''; document.getElementById('mBandaSup').value=s.banda_sup||'';
+  }catch{box.innerHTML='<span style="color:var(--red)">⚠️ No se pudo obtener sugerencia. Completa manualmente.</span>';}
+  btn.disabled=false;
+}
+
+function saveCustom(){
+  const n=document.getElementById('mNombre').value.trim(), c=document.getElementById('mCat').value;
+  const niv=document.getElementById('mNivel').value;
+  const bi=parseInt(document.getElementById('mBandaInf').value||'0'), bs=parseInt(document.getElementById('mBandaSup').value||'0');
+  if(!n||!c||!niv||!bi||!bs)return alert('Completa todos los campos requeridos');
+  const sal=Math.round((bi+bs)/2);
+  const carga=calcCarga(sal);
+  const nr={rol:n,categoria:c,nombre_mercado:n,subfamilia:'Personalizado',nivel:niv,banda_inf:bi,banda_sup:bs,tipo_salario:'Ordinario',salario_asignado:sal,total_devengo:sal,carga_prestacional:carga.carga,costo_total:sal+carga.carga,_custom:true};
+  customRoles.push(nr); saveCustomStorage(customRoles);
+  allRoles=[...ROLES_BASE,...customRoles.map(r=>({...r,_custom:true}))];
+  updateCustomPill(); filterRoles(); closeModal(); selectRole(nr);
+}
+
+function updateCustomPill(){
+  const p=document.getElementById('customPill');
+  if(customRoles.length>0){p.style.display='inline';p.textContent=customRoles.length;}else{p.style.display='none';}
+  document.getElementById('totalPill').textContent=allRoles.length+' roles';
+}
+
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
